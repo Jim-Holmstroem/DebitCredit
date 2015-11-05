@@ -1,10 +1,1 @@
 *.sw[op]
-Site
-*.dyn_hi
-*.dyn_o
-*.hi
-*.o
-log/
-*.old
-*.old2
-state/

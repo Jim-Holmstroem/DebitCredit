@@ -1,0 +1,8 @@
+*.o
+Site
+*.dyn_hi
+*.dyn_o
+*.hi
+
+log/
+state/
