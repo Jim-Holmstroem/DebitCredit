@@ -25,7 +25,8 @@ import           Snap.Util.FileServe (serveDirectory)
 import           Snap (SnapletInit, Snaplet, Handler,
                  addRoutes, nestSnaplet, serveSnaplet,
                  defaultConfig, makeSnaplet, getParam,
-                 snapletValue, writeText, method, Method (POST, GET))
+                 snapletValue, writeText, method, Method (POST, GET),
+                 modifyResponse, setHeader, MonadSnap)
 import           Snap.Snaplet.AcidState (Update, Query, Acid,
                  HasAcid (getAcidStore), makeAcidic, update, query, acidInit)
 
@@ -116,10 +117,21 @@ routePostEntry = do
     writeText $ T.pack "POST entries"
 
 
+-- Cache-Control: no-cache, no-store, must-revalidate
+-- Pragma: no-cache
+-- Expires: 0
+notCached :: MonadSnap m => m () -> m ()
+notCached snap = do
+    modifyResponse $ foldl1 (.) [ setHeader "Cache-Control" "no-cache, no-store, must-revalidate"
+                                , setHeader "Pragma" "no-cache"
+                                , setHeader "Expires" "0"
+                                ]
+    snap
+
 routes :: [(ByteString, Handler App App ())]
-routes = [ ("", serveDirectory "resources/static")
-         , ("/entries", method GET routeEntries)
-         , ("/entries", method POST routePostEntry)
+routes = [ ("", notCached $ serveDirectory "resources/static")
+         , ("/entries", method GET $ notCached routeEntries)
+         , ("/entries", method POST $ notCached routePostEntry)
          ]
 
 --        writeText . T.pack . show =<< query GetEntries
