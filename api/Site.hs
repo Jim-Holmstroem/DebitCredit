@@ -113,7 +113,6 @@ routeEntries = do
     writeText $ T.pack $ JSON.encode $ PersistentEntry { _active=True, _to="jim", _from="sofia", _amount=3.14}
 
 routePostEntry = do
-    
     writeText $ T.pack "POST entries"
 
 
